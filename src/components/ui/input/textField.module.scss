@@ -40,17 +40,13 @@
   }
 
   &:hover {
-    opacity: 0.5;
+    opacity: 0.7;
   }
 }
 
 .error {
   color: var(--color-danger-300);
   border: 1px solid var(--color-danger-300);
-
-  //&:focus-visible {
-  //  outline: 1px solid var(--color-danger-300);
-  //}
 }
 
 .errorMessage {
