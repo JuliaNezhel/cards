@@ -4,18 +4,11 @@ import s from '@/components/ui/input/textField.module.scss'
 
 type IconPropsType = {
   iconId: string
-  onClick?: () => void
 }
 
 export const Icon = (props: IconPropsType) => {
-  const onclickHandler = () => {
-    if (props.onClick) {
-      props.onClick()
-    }
-  }
-
   return (
-    <span className={s.containerIcon} onClick={onclickHandler}>
+    <span className={s.containerIcon}>
       <svg
         fill={'white'}
         height={'100%'}

@@ -1,6 +1,8 @@
-import { ChangeEvent, ComponentPropsWithoutRef, useState } from 'react'
+import { ComponentPropsWithoutRef, useState } from 'react'
 
-import { Icon } from '@/components/ui/icon/icon'
+import { Close } from '@/assets/icons/components/close'
+import { EyeOutline } from '@/assets/icons/components/eyeOutline'
+import { Search } from '@/assets/icons/components/search'
 
 import s from './textField.module.scss'
 
@@ -8,73 +10,64 @@ type VariantInput = 'default' | 'password' | 'search'
 
 type InputType = {
   error?: string
+  onClearClick?: () => void
   variant?: VariantInput
 } & ComponentPropsWithoutRef<'input'>
 
 export const TextField = (props: InputType) => {
-  const { className = 'default', error, value, variant } = props
-
-  const initialInputType = variant !== 'password' ? 'text' : 'password'
-
-  const [inputType, setInputType] = useState(initialInputType)
-  const [valueInput, setValueInput] = useState(value)
+  const { className, error, onClearClick, placeholder, value, variant = 'default', ...rest } = props
 
   const searchVariant = variant === 'search'
   const passwordVariant = variant === 'password'
 
-  const onChangeHAndler = (e: ChangeEvent<HTMLInputElement>) => {
-    if (props.onChange) {
-      props.onChange(e)
-    }
-    setValueInput(e.currentTarget.value)
-  }
+  const inputID = crypto.randomUUID()
 
-  const onClickShowPassword = () => {
+  const initialInputType = !passwordVariant ? 'text' : 'password'
+
+  const [inputType, setInputType] = useState(initialInputType)
+
+  const isShowClearButton = searchVariant && onClearClick && value && !error
+
+  const onShowPassword = () => {
     if (passwordVariant) {
       setInputType(state => (state === 'password' ? 'type' : 'password'))
     }
-    if (searchVariant) {
-      setValueInput('')
-    }
-  }
-  let stylePadding = {}
-
-  if (passwordVariant) {
-    stylePadding = { paddingRight: '36px' }
-  } else if (searchVariant) {
-    stylePadding = { padding: '6px 36px' }
   }
 
   return (
     <div className={`${s.container} ${className}`}>
-      <div className={`${s.inputContainer}`}>
+      <div className={`${s.textFieldContainer} ${searchVariant ? s.searchVariant : ''}`}>
         {searchVariant && (
-          <span className={s.iconsearch}>
-            <Icon iconId={'search-outline'} />{' '}
+          <span className={`${s.iconSearch} ${!value ? s.iconSearchDev : ''}`}>
+            <Search size={'20px'} />
           </span>
         )}
 
         <input
-          className={`${s.input} ${error ? s.error : ''}`}
-          style={stylePadding}
-          {...props}
-          onChange={onChangeHAndler}
+          className={`${s.input} ${error ? s.error : ''} ${value && s.inputActive}
+            ${passwordVariant ? s.passwordVariant : ''} 
+            `}
+          id={inputID}
+          {...rest}
+          placeholder={placeholder}
           type={inputType}
-          value={valueInput}
+          value={value}
         />
+        {!searchVariant && <label htmlFor={inputID}>{placeholder}</label>}
 
         {passwordVariant && (
-          <button className={s.buttonIcon}>
-            <Icon iconId={'eye-outline'} onClick={onClickShowPassword} />
+          <button className={s.buttonIcon} onClick={onShowPassword}>
+            <EyeOutline size={'20px'} />
           </button>
         )}
 
-        {searchVariant && valueInput && !error && (
-          <button className={s.buttonIcon}>
-            <Icon iconId={'close'} onClick={onClickShowPassword} />
+        {isShowClearButton && (
+          <button className={s.buttonIcon} onClick={onClearClick}>
+            <Close size={'16px'}></Close>
           </button>
         )}
       </div>
+
       {error && <div className={s.errorMessage}>{error}</div>}
     </div>
   )
